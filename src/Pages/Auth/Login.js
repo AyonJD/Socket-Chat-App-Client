@@ -33,16 +33,15 @@ const Login = () => {
             })
         });
         const dataResponse = await response.json();
-        console.log(dataResponse);
         if (!dataResponse.success) {
             console.log(dataResponse.message);
             return;
         }
-        const { token, user } = dataResponse;
+        const { token, result} = dataResponse;
         setToken(token);
-        setUser(user);
+        setUser(result);
         localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('user', JSON.stringify(result));
         navigate(from, { replace: true });
     }
 

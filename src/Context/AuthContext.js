@@ -1,4 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
@@ -6,6 +7,7 @@ const AuthProvider = ({ children }) => {
     const [chats, setChats] = useState([]);
     const [token, setToken] = useState(null);
     const [user, setUser] = useState(null);
+    const navigate = useNavigate();
 
     const dataStore = {
         chats,
@@ -13,7 +15,7 @@ const AuthProvider = ({ children }) => {
         token,
         setToken,
         user,
-        setUser
+        setUser,
     }
 
     const _retriveToken = () => {
@@ -24,16 +26,36 @@ const AuthProvider = ({ children }) => {
         }
     }
 
+    useEffect(() => {
+        _retriveToken();
+    }, []);
+
+
     const getChats = async () => {
-        const res = await fetch('http://localhost:5000/chats');
-        const data = await res.json();
-        setChats(data);
+        const userId = await user?.id;
+        const url = `http://localhost:5000/api/v1/chat/${userId}`;
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const dataResponse = await response.json();
+        if (!dataResponse.success) {
+            console.log(dataResponse.message);
+            return;
+        }
+        setChats(dataResponse);
     }
 
     useEffect(() => {
-        _retriveToken();
+        if (!token) {
+            navigate('/login');
+        }
         getChats();
-    }, []);
+    }, [token, user]);
+
+    console.log(chats);
 
     return (
         <AuthContext.Provider value={{ dataStore }}>

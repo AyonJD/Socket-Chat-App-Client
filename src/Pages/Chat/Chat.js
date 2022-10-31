@@ -4,7 +4,7 @@ import './Chat.css'
 
 const Chat = () => {
     const { dataStore } = useContext(AuthContext);
-    const { chats, token } = dataStore;
+    const { chats, token, user } = dataStore;
     
     return (
         <div className="container mx-auto">
